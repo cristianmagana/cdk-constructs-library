@@ -14,21 +14,56 @@ npm install @cdk-constructs/aws --save-exact
 
 ## Usage
 
-### Account Enum
+### Example Account IDs (Public Package)
+
+The published package includes example account IDs for demonstration purposes:
 
 ```typescript
-import {Account} from '@cdk-constructs/aws';
+import {Account, Environment, Region} from '@cdk-constructs/aws';
 
-// Use in CDK stack
-const accountId = Account.PROD;
+const stack = new Stack(app, 'MyStack', {
+    env: {
+        account: Account.PROD, // '333333333333' (example)
+        region: Region.US_EAST_1,
+    },
+});
 ```
+
+### Using Your Own Account IDs (Recommended)
+
+For your actual AWS deployments, create a local configuration file:
+
+**Step 1:** Create `packages/aws/src/accounts.local.ts`
+
+```typescript
+export enum AccountLocal {
+    DEV = 'your-dev-account-id',
+    STAGING = 'your-staging-account-id',
+    PROD = 'your-prod-account-id',
+}
+```
+
+**Step 2:** Import from your local file
+
+```typescript
+import {AccountLocal} from '@cdk-constructs/aws/dist/src/accounts.local';
+import {Environment, Region} from '@cdk-constructs/aws';
+
+const stack = new Stack(app, 'MyStack', {
+    env: {
+        account: AccountLocal.PROD,
+        region: Region.US_EAST_1,
+    },
+});
+```
+
+**Important:** The `accounts.local.ts` file is gitignored and will never be published or committed. This keeps your actual AWS account IDs private while allowing you to publish the package publicly with example IDs.
 
 ### Region Enum
 
 ```typescript
 import {Region} from '@cdk-constructs/aws';
 
-// Use in CDK stack
 const region = Region.US_EAST_1;
 ```
 
@@ -37,16 +72,16 @@ const region = Region.US_EAST_1;
 ```typescript
 import {Environment} from '@cdk-constructs/aws';
 
-// Use in CDK stack
 const env = Environment.PROD;
 ```
 
 ## Enums
 
-### Account
+### Account (Example IDs)
 
-- `PROD` - Production account ID
-- `NONPROD` - Non-production account ID
+- `DEV` - Development account ID (example: `111111111111`)
+- `STAGING` - Staging account ID (example: `222222222222`)
+- `PROD` - Production account ID (example: `333333333333`)
 
 ### Region
 

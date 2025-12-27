@@ -1,21 +1,22 @@
 import {Construct} from 'constructs';
-import {Stack, StackProps} from 'aws-cdk-lib';
+import {Stack, StackProps, Tags} from 'aws-cdk-lib';
 import {createCodeArtifact, CodeArtifactStackProps} from '@cdk-constructs/codeartifact';
-import {Account, Region} from '@cdk-constructs/aws';
+import {EnvironmentConfig} from '@cdk-constructs/aws';
 
 /**
- * Environment configuration for the stack.
+ * CodeArtifact stack properties.
  */
-export interface EnvironmentConfig {
-    account: Account;
-    region: Region;
-}
+export type CodeArtifactStackPropsWithEnv = StackProps & CodeArtifactStackProps & EnvironmentConfig;
 
 /**
  * CodeArtifact stack for integration testing.
+ *
+ * @remarks
+ * This stack creates a CodeArtifact domain and repository with proper
+ * environment configuration and tagging.
  */
 export class CodeArtifactStack extends Stack {
-    constructor(scope: Construct, id: string, props: StackProps & CodeArtifactStackProps & EnvironmentConfig) {
+    constructor(scope: Construct, id: string, props: CodeArtifactStackPropsWithEnv) {
         super(scope, id, {
             ...props,
             env: {
@@ -23,6 +24,10 @@ export class CodeArtifactStack extends Stack {
                 region: props.region,
             },
         });
+
+        // Add environment tags
+        Tags.of(this).add('Environment', props.name);
+        Tags.of(this).add('Owner', props.owner);
 
         createCodeArtifact(this, 'cdk-constructs-codeartifact', {
             codeArtifactDomainName: props.codeArtifactDomainName,

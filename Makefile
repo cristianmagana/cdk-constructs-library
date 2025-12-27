@@ -1,4 +1,4 @@
-.PHONY: help install clean lint lint-fix format format-check format-fix build build-app build-all test synth diff deploy check ci-build ci-check
+.PHONY: help install clean lint lint-fix format format-check format-fix build build-app build-all build-workspace build-aws build-codeartifact test synth diff deploy check ci-build ci-check codeartifact-login publish-workspace publish-aws publish-codeartifact publish-all-packages pre-publish publish
 
 # Default target - show help
 .DEFAULT_GOAL := help
@@ -68,20 +68,41 @@ clean: ## Remove all build artifacts
 	npm run clean
 	@echo "$(GREEN)✓ Build artifacts cleaned$(NC)"
 
-build: ## Build root package only (src/)
-	@echo "$(CYAN)Building root package...$(NC)"
-	npm run build
-	@echo "$(GREEN)✓ Root package built$(NC)"
+build: ## Build all workspace packages
+	@echo "$(CYAN)Building all workspaces...$(NC)"
+	npm run build:workspaces
+	@echo "$(GREEN)✓ All workspaces built$(NC)"
 
 build-app: ## Build CDK app (bin/, lib/)
 	@echo "$(CYAN)Building CDK app...$(NC)"
 	npm run build:app
 	@echo "$(GREEN)✓ CDK app built$(NC)"
 
-build-all: clean ## Build all packages in dependency order
+build-all: clean ## Build everything (workspaces + app)
 	@echo "$(CYAN)Building all packages...$(NC)"
-	npm run build:workspaces
+	npm run build
 	@echo "$(GREEN)✓ All packages built$(NC)"
+
+build-workspace: ## Build specific workspace (usage: make build-workspace PACKAGE=aws)
+	@if [ -z "$(PACKAGE)" ]; then \
+		echo "$(RED)✗ Error: PACKAGE variable not set$(NC)"; \
+		echo "$(YELLOW)Usage: make build-workspace PACKAGE=aws$(NC)"; \
+		echo "$(YELLOW)Available packages: aws, codeartifact$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(CYAN)Building @cdk-constructs/$(PACKAGE)...$(NC)"
+	npm run build --workspace=@cdk-constructs/$(PACKAGE)
+	@echo "$(GREEN)✓ @cdk-constructs/$(PACKAGE) built$(NC)"
+
+build-aws: ## Build @cdk-constructs/aws package
+	@echo "$(CYAN)Building @cdk-constructs/aws...$(NC)"
+	npm run build --workspace=@cdk-constructs/aws
+	@echo "$(GREEN)✓ @cdk-constructs/aws built$(NC)"
+
+build-codeartifact: ## Build @cdk-constructs/codeartifact package
+	@echo "$(CYAN)Building @cdk-constructs/codeartifact...$(NC)"
+	npm run build --workspace=@cdk-constructs/codeartifact
+	@echo "$(GREEN)✓ @cdk-constructs/codeartifact built$(NC)"
 
 ##@ Testing
 
@@ -154,3 +175,62 @@ check-versions: ## Verify Node.js and npm versions
 		exit 1; \
 	fi
 	@echo "$(GREEN)✓ Version requirements met$(NC)"
+
+##@ Publishing
+
+# CodeArtifact configuration (override with env vars)
+CODEARTIFACT_DOMAIN ?= cdk-constructs
+CODEARTIFACT_REPOSITORY ?= cdk-constructs-library
+AWS_REGION ?= us-east-1
+
+codeartifact-login: ## Authenticate with CodeArtifact
+	@echo "$(CYAN)Authenticating with CodeArtifact...$(NC)"
+	@echo "$(YELLOW)Domain: $(CODEARTIFACT_DOMAIN)$(NC)"
+	@echo "$(YELLOW)Repository: $(CODEARTIFACT_REPOSITORY)$(NC)"
+	@echo "$(YELLOW)Region: $(AWS_REGION)$(NC)"
+	@aws codeartifact login \
+		--tool npm \
+		--domain $(CODEARTIFACT_DOMAIN) \
+		--repository $(CODEARTIFACT_REPOSITORY) \
+		--region $(AWS_REGION)
+	@echo "$(GREEN)✓ Authenticated with CodeArtifact$(NC)"
+
+publish-workspace: codeartifact-login ## Publish specific workspace (usage: make publish-workspace PACKAGE=aws)
+	@if [ -z "$(PACKAGE)" ]; then \
+		echo "$(RED)✗ Error: PACKAGE variable not set$(NC)"; \
+		echo "$(YELLOW)Usage: make publish-workspace PACKAGE=aws$(NC)"; \
+		echo "$(YELLOW)Available packages: aws, codeartifact$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(CYAN)Publishing @cdk-constructs/$(PACKAGE)...$(NC)"
+	@cd packages/$(PACKAGE) && npm publish
+	@echo "$(GREEN)✓ @cdk-constructs/$(PACKAGE) published$(NC)"
+
+publish-aws: codeartifact-login ## Publish @cdk-constructs/aws package
+	@echo "$(CYAN)Publishing @cdk-constructs/aws...$(NC)"
+	@cd packages/aws && npm publish
+	@echo "$(GREEN)✓ @cdk-constructs/aws published$(NC)"
+
+publish-codeartifact: codeartifact-login ## Publish @cdk-constructs/codeartifact package
+	@echo "$(CYAN)Publishing @cdk-constructs/codeartifact...$(NC)"
+	@cd packages/codeartifact && npm publish
+	@echo "$(GREEN)✓ @cdk-constructs/codeartifact published$(NC)"
+
+publish-all-packages: publish-aws publish-codeartifact ## Publish all workspace packages
+	@echo "$(GREEN)✓ All packages published$(NC)"
+
+pre-publish: ## Run all pre-publish validation steps
+	@echo "$(CYAN)Running pre-publish validation...$(NC)"
+	@$(MAKE) check-versions
+	@$(MAKE) format-check
+	@$(MAKE) lint
+	@$(MAKE) test
+	@$(MAKE) build-all
+	@echo "$(GREEN)✓ Pre-publish validation passed$(NC)"
+
+publish: pre-publish publish-all-packages ## Run validation and publish all packages to CodeArtifact
+	@echo "$(GREEN)✓ Publishing complete$(NC)"
+	@echo ""
+	@echo "$(CYAN)Published packages:$(NC)"
+	@echo "  • @cdk-constructs/aws"
+	@echo "  • @cdk-constructs/codeartifact"

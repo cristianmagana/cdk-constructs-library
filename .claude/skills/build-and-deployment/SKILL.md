@@ -135,6 +135,73 @@ The `build:workspaces` script:
 - Lists packages in dependency order
 - Uses TypeScript project references for incremental builds
 
+## Deployment Patterns
+
+### Multi-Account Strategy
+
+This project follows a strict multi-account deployment pattern for security, isolation, and supply chain integrity.
+
+#### Account Structure
+
+| Account     | Purpose                                                     | Access Pattern                                                  |
+| ----------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
+| **BUILD**   | CI/CD pipelines, artifact generation, supply chain security | Isolated account. Other accounts can access readonly/immutable. |
+| **DEV**     | Active development and testing                              | Can access BUILD artifacts (readonly).                          |
+| **STAGING** | Pre-production testing and validation                       | Can access BUILD artifacts (readonly).                          |
+| **PROD**    | Production workloads                                        | Can access BUILD artifacts (readonly).                          |
+
+#### BUILD Account Principles
+
+**CRITICAL**: The BUILD account MUST be its own isolated AWS account.
+
+1. **Isolation**: BUILD account is completely separate from application environments
+2. **Readonly Access**: DEV, STAGING, and PROD can only read from BUILD (never write)
+3. **Immutable Artifacts**: Once built in BUILD, artifacts cannot be modified
+4. **Supply Chain Security**: All dependencies and builds happen in isolated BUILD environment
+5. **Access Control**: BUILD account has read/write. Other accounts have readonly only.
+
+#### CodeArtifact Access Patterns
+
+```typescript
+// BUILD environment - owns the artifact repository
+{
+  ...buildEnv,
+  codeArtifact: {
+    codeArtifactDomainName: 'cdk-constructs',
+    codeArtifactRepositoryName: 'cdk-constructs-library-build',
+    codeArtifactRepositoryDescription: 'Build Repository - Supply Chain Security',
+    // All accounts can access, but only BUILD can write
+    allowedAccounts: [Account.BUILD, Account.DEV, Account.STAGING, Account.PROD],
+  },
+}
+
+// Application environments - consume artifacts from BUILD
+{
+  ...devEnv,
+  codeArtifact: {
+    // DEV has its own repository but also accesses BUILD
+    allowedAccounts: [Account.DEV, Account.STAGING, Account.BUILD],
+  },
+}
+```
+
+#### Environment Configuration Location
+
+Environment configurations follow CDK conventions:
+
+- **Types**: `lib/types/project.ts` - ProjectEnvironment type
+- **Configs**: `lib/config/environments.ts` - buildEnv, devEnv, stagingEnv, prodEnv
+- **Re-exports**: `bin/environment.ts` - Backwards compatibility
+
+This follows the pattern: `bin/` → `lib/` for CDK applications.
+
+### Deployment Security
+
+1. **Never deploy BUILD artifacts to BUILD account** - BUILD creates, others consume
+2. **Enforce readonly** - Use IAM policies to prevent write access from non-BUILD accounts
+3. **Tag everything** - Environment and Owner tags applied automatically via EnvironmentConfig
+4. **Audit access** - Monitor cross-account access to BUILD artifacts
+
 ## Common Build Issues
 
 ### Issue: "Cannot find module '@cdk-constructs/...'"

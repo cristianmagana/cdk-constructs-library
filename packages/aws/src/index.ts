@@ -9,3 +9,4 @@
 export * from './enums/account';
 export * from './enums/region';
 export * from './enums/environment';
+export * from './types/environment-config';
