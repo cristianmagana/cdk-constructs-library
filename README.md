@@ -6,9 +6,14 @@ A comprehensive AWS Cloud Development Kit (CDK) library providing infrastructure
 
 This is a **monorepo managed with npm workspaces** that provides a collection of reusable AWS CDK constructs, utilities, and configuration patterns. The project simplifies the creation, deployment, and management of AWS infrastructure across multiple environments.
 
-### Architecture Strategy
+### Project Goals
 
-**Go-Forward Strategy:** We are actively migrating constructs from the root package into dedicated subpackages for better modularity, maintainability, and versioning control. This allows teams to adopt and update individual components independently.
+This repository serves as a comprehensive monorepo of subpackages that apply **platform engineering paved roads** for AWS services. Our constructs are designed to:
+
+- **Reduce Developer Cognitive Load**: Provide opinionated, battle-tested patterns that abstract away complexity while maintaining flexibility
+- **Cost Effectiveness**: Implement best practices for resource optimization and cost management
+- **Environmental Consciousness**: Promote efficient resource utilization and sustainable cloud practices
+- **Accelerate Development**: Enable teams to focus on business logic rather than infrastructure boilerplate
 
 ## Packages
 
@@ -20,30 +25,20 @@ This monorepo contains the following packages:
 | ------------------------ | ------- | --------------------------------------------------------------------- |
 | [@cdk-constructs/cdk](.) | 0.1.0   | Root package with core utilities, types, enums, and legacy constructs |
 
-### Subpackages
+### Subpackages Compatibility Matrix
 
-| Package                                             | Version | Description                                              | Documentation |
-| --------------------------------------------------- | ------- | -------------------------------------------------------- | ------------- |
-| [@cdk-constructs/api-gateway](packages/api-gateway) | TBD     | Private and Regional API Gateway with Lambda integration | TBD           |
-| [@cdk-constructs/aurora](packages/aurora)           | TBD     | Aurora PostgreSQL and MySQL cluster constructs           | TBD           |
-| [@cdk-constructs/cloudwatch](packages/cloudwatch)   | TBD     | CloudWatch log groups and monitoring                     | TBD           |
-| [@cdk-constructs/eks](packages/eks)                 | TBD     | EKS cluster utilities and VPC constants                  | TBD           |
-| [@cdk-constructs/waf](packages/waf)                 | TBD     | Web Application Firewall configurations                  | TBD           |
+| Package                                               | Version | CDK Version | Node Version | Description                                   |
+| ----------------------------------------------------- | ------- | ----------- | ------------ | --------------------------------------------- |
+| [@cdk-constructs/aws](packages/aws)                   | 0.1.0   | ^2.225.0    | >=24         | AWS account, region, and environment enums    |
+| [@cdk-constructs/codeartifact](packages/codeartifact) | 0.1.0   | ^2.225.0    | >=24         | CodeArtifact domain and repository constructs |
 
-## Dependency Resolution
-
-Each subpackage has a peer dependency on the root package:
+### Dependency Resolution
 
 ```
 @cdk-constructs/cdk (root)
-├── @cdk-constructs/api-gateway (depends on: cdk@*)
-├── @cdk-constructs/aurora (depends on: cdk@*)
-├── @cdk-constructs/cloudwatch (depends on: cdk@*, api-gateway@*)
-├── @cdk-constructs/eks (depends on: cdk@*)
-└── @cdk-constructs/waf (depends on: cdk@*)
+├── @cdk-constructs/aws
+└── @cdk-constructs/codeartifact (depends on: aws@*)
 ```
-
-**Note:** `@cdk-constructs/cloudwatch` has dependencies on both `cdk` and `api-gateway` for PagerDuty and ServiceDesk Plus Lambda integrations.
 
 ### Root Package Constructs
 
@@ -70,14 +65,133 @@ The following constructs remain in the root package and will be migrated to subp
 npm install @cdk-constructs/cdk --save-exact
 
 # Install subpackages as needed
-npm install @cdk-constructs/api-gateway --save-exact
-npm install @cdk-constructs/aurora --save-exact
-npm install @cdk-constructs/cloudwatch --save-exact
-npm install @cdk-constructs/eks --save-exact
-npm install @cdk-constructs/waf --save-exact
+npm install @cdk-constructs/aws --save-exact
+npm install @cdk-constructs/codeartifact --save-exact
 ```
 
 ## Development
+
+### Quick Start with Make
+
+This project uses a Makefile for all development tasks:
+
+```bash
+# Install dependencies and set up git hooks
+make install
+
+# Build everything (workspaces + CDK app)
+make build-all
+
+# Run linting and formatting checks
+make check
+
+# Deploy CDK stacks to AWS
+make deploy
+```
+
+### Common Make Commands
+
+#### Development Setup
+
+```bash
+make install              # Install all dependencies and set up git hooks
+```
+
+#### Build Commands
+
+```bash
+make build                # Build all workspace packages
+make build-app            # Build CDK app (bin/, lib/)
+make build-all            # Build everything (workspaces + app)
+make clean                # Remove all build artifacts
+
+# Build specific workspace
+make build-workspace PACKAGE=aws           # Build @cdk-constructs/aws
+make build-workspace PACKAGE=codeartifact  # Build @cdk-constructs/codeartifact
+
+# Or use individual targets
+make build-aws            # Build @cdk-constructs/aws
+make build-codeartifact   # Build @cdk-constructs/codeartifact
+```
+
+#### Code Quality
+
+```bash
+make lint                 # Run ESLint on all TypeScript files
+make lint-fix             # Fix linting issues automatically
+make format               # Format code with Prettier
+make format-check         # Check code formatting without making changes
+make check                # Run all quality checks (format + lint)
+```
+
+#### CDK Operations
+
+```bash
+make synth                # Synthesize CloudFormation templates
+make diff                 # Show CDK diff against deployed stacks
+make deploy               # Deploy CDK stacks to AWS
+make deploy-stack STACK=StackName  # Deploy specific stack
+```
+
+#### Testing
+
+```bash
+make test                 # Run tests
+```
+
+#### CI/CD
+
+```bash
+make ci-check             # CI check - format check, lint, and build
+make ci-build             # CI build - checks + full build
+make ci-deploy            # CI deploy - checks + build + synth
+```
+
+#### Publishing
+
+```bash
+# Publish all packages (runs all pre-validation steps)
+make publish              # Format check + lint + test + build + publish
+
+# Publish individual packages
+make publish-aws          # Publish @cdk-constructs/aws
+make publish-codeartifact # Publish @cdk-constructs/codeartifact
+
+# Or publish specific workspace
+make publish-workspace PACKAGE=aws
+
+# Just authenticate with CodeArtifact
+make codeartifact-login
+```
+
+**Environment Variables for Publishing:**
+
+```bash
+# Override CodeArtifact configuration
+export CODEARTIFACT_DOMAIN=my-domain
+export CODEARTIFACT_REPOSITORY=my-repo
+export AWS_REGION=us-east-1
+
+make publish
+```
+
+**Pre-publish Validation:**
+
+The `make publish` command automatically runs:
+
+1. ✅ Version checks (Node.js >= 24, npm >= 10)
+2. ✅ Format validation (`format-check`)
+3. ✅ Linting (`lint`)
+4. ✅ Tests (`test`)
+5. ✅ Full build (`build-all`)
+6. ✅ CodeArtifact authentication
+7. ✅ Package publishing
+
+For a complete list of available commands, run:
+
+```bash
+make help
+```
 
 ### Workspace Setup
 
@@ -87,10 +201,10 @@ git clone <repository-url>
 cd cdk-constructs-library
 
 # Install dependencies (workspace symlinks created automatically)
-npm install
+make install
 
 # Build all packages
-npm run build
+make build-all
 ```
 
 ### Workspace Structure
@@ -98,15 +212,14 @@ npm run build
 ```
 cdk-constructs-library/
 ├── package.json              # Root package with workspace configuration
+├── Makefile                  # Build automation and common tasks
 ├── packages/
-│   ├── api-gateway/         # API Gateway & Lambda constructs
-│   ├── aurora/              # Aurora database constructs
-│   ├── cloudwatch/          # CloudWatch monitoring
-│   ├── eks/                 # EKS utilities
-│   └── waf/                 # WAF configurations
+│   ├── aws/                 # AWS account, region, and environment enums
+│   └── codeartifact/        # CodeArtifact domain and repository constructs
 ├── src/                     # Root package source
-├── docs/                    # Documentation
-└── scripts/                 # Build and test scripts
+├── bin/                     # CDK app entry points
+├── lib/                     # CDK app stacks
+└── docs/                    # Documentation
 ```
 
 ## Key Features

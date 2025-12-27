@@ -5,13 +5,22 @@ import {AccountPrincipal, Effect, PolicyStatement, Role} from 'aws-cdk-lib/aws-i
 import {CodeArtifactDomainProps, CodeArtifactRepositoryProps, CodeArtifactStackProps} from '../types/code-artifact';
 
 /**
- * Creates a CodeArtifact domain.
+ * Creates a CodeArtifact domain with cross-account access policies.
  *
  * @param scope - The parent construct
  * @param id - The construct ID
- * @param props - The domain properties
+ * @param props - Domain configuration properties
  * @returns The created CodeArtifact domain
  *
+ * @example
+ * ```typescript
+ * const domain = createCodeArtifactDomain(this, 'MyDomain', {
+ *   domainName: 'my-company',
+ *   allowedAccounts: [Account.BUILD, Account.DEV],
+ * });
+ * ```
+ *
+ * @see {@link CodeArtifactDomainProps} for configuration options
  * @public
  */
 export const createCodeArtifactDomain = (scope: Construct, id: string, props: CodeArtifactDomainProps): CfnDomain => {
@@ -49,13 +58,24 @@ export const createCodeArtifactDomain = (scope: Construct, id: string, props: Co
 };
 
 /**
- * Creates a CodeArtifact repository.
+ * Creates a CodeArtifact repository with cross-account access policies.
  *
  * @param scope - The parent construct
- * @param domain - The CodeArtifact domain
- * @param props - The repository properties
+ * @param domain - The CodeArtifact domain this repository belongs to
+ * @param props - Repository configuration properties
  * @returns The created CodeArtifact repository
  *
+ * @example
+ * ```typescript
+ * const repository = createCodeArtifactRepository(this, domain, {
+ *   domainName: 'my-company',
+ *   repositoryName: 'npm-packages',
+ *   repositoryDescription: 'Private npm packages',
+ *   allowedAccounts: [Account.BUILD, Account.DEV],
+ * });
+ * ```
+ *
+ * @see {@link CodeArtifactRepositoryProps} for configuration options
  * @public
  */
 export const createCodeArtifactRepository = (scope: Construct, domain: CfnDomain, props: CodeArtifactRepositoryProps): CfnRepository => {
@@ -109,12 +129,21 @@ export const createCodeArtifactRepository = (scope: Construct, domain: CfnDomain
 };
 
 /**
- * Creates a CDK publish role for GitHub Actions or CI/CD pipelines.
+ * Creates an IAM role for publishing packages to CodeArtifact from CI/CD.
  *
  * @param scope - The parent construct
  * @param roleName - The name of the IAM role
  * @param accountId - The AWS account ID that can assume this role
  * @returns The created IAM role
+ *
+ * @example
+ * ```typescript
+ * const publishRole = createCdkPublishRole(
+ *   this,
+ *   'GitHubActionsPublishRole',
+ *   Account.BUILD
+ * );
+ * ```
  *
  * @public
  */
@@ -153,13 +182,24 @@ export const createCdkPublishRole = (scope: Construct, roleName: string, account
 };
 
 /**
- * Creates a complete CodeArtifact setup (domain and repository).
+ * Creates a complete CodeArtifact setup with domain and repository.
  *
  * @param scope - The parent construct
  * @param id - The construct ID
- * @param props - The CodeArtifact properties
+ * @param props - CodeArtifact configuration properties
  * @returns An object containing the created domain and repository
  *
+ * @example
+ * ```typescript
+ * const {domain, repository} = createCodeArtifact(this, 'CodeArtifact', {
+ *   codeArtifactDomainName: 'my-company',
+ *   codeArtifactRepositoryName: 'npm-packages',
+ *   codeArtifactRepositoryDescription: 'Private npm packages',
+ *   allowedAccounts: [Account.BUILD, Account.DEV],
+ * });
+ * ```
+ *
+ * @see {@link CodeArtifactStackProps} for configuration options
  * @public
  */
 export const createCodeArtifact = (scope: Construct, id: string, props: CodeArtifactStackProps): {domain: CfnDomain; repository: CfnRepository} => {

@@ -1,61 +1,44 @@
-import {Account, Region, Environment} from '@cdk-constructs/aws';
-import {CodeArtifactStackProps} from '@cdk-constructs/codeartifact';
-
 /**
- * Environment configuration for integration testing.
+ * Environment configuration re-exports.
+ *
+ * @remarks
+ * This file re-exports environment configurations and types from their
+ * organized locations for backwards compatibility.
+ *
+ * - Types are defined in lib/types/
+ * - Configurations are defined in lib/config/
  */
-export interface EnvironmentConfig {
-    account: Account;
-    region: Region;
-    environment: Environment;
-}
 
-/**
- * Project environment configuration that includes all test stack props.
- */
-export interface ProjectEnvironment extends EnvironmentConfig {
-    codeArtifact?: CodeArtifactStackProps;
-}
+import {ProjectEnvironment} from '../lib/types/project';
+import {buildEnv, devEnv, prodEnv, stagingEnv} from '../lib/config/environments';
+import {ResolvedAccounts} from '../lib/config/account-resolver';
 
-/**
- * Development environment configuration.
- */
-const devEnv: EnvironmentConfig = {
-    account: Account.NONPROD,
-    region: Region.US_EAST_1,
-    environment: Environment.DEV,
-};
-
-/**
- * Production environment configuration.
- */
-const prodEnv: EnvironmentConfig = {
-    account: Account.PROD,
-    region: Region.US_EAST_1,
-    environment: Environment.PROD,
-};
+export type {ProjectEnvironment} from '../lib/types/project';
 
 /**
  * Integration test environments.
+ *
+ * @remarks
  * Add new environments and stack configurations here for testing.
+ * Each environment can include optional stack-specific props.
  */
 export const integrationEnvironments: ProjectEnvironment[] = [
     {
-        ...devEnv,
+        ...buildEnv,
         codeArtifact: {
             codeArtifactDomainName: 'cdk-constructs',
             codeArtifactRepositoryName: 'cdk-constructs-library',
-            codeArtifactRepositoryDescription: 'CDK Constructs Library Repository',
-            allowedAccounts: [Account.NONPROD, Account.PROD],
+            codeArtifactRepositoryDescription: 'CDK Constructs Library Build Repository',
+            allowedAccounts: [ResolvedAccounts.DEV, ResolvedAccounts.STAGING, ResolvedAccounts.PROD],
         },
     },
     {
+        ...devEnv,
+    },
+    {
+        ...stagingEnv,
+    },
+    {
         ...prodEnv,
-        codeArtifact: {
-            codeArtifactDomainName: 'cdk-constructs',
-            codeArtifactRepositoryName: 'cdk-constructs-library',
-            codeArtifactRepositoryDescription: 'CDK Constructs Library Repository',
-            allowedAccounts: [Account.PROD],
-        },
     },
 ];

@@ -8,9 +8,11 @@ const app = new App();
 // Create CodeArtifact stacks for each integration environment
 integrationEnvironments.forEach(env => {
     if (env.codeArtifact) {
-        new CodeArtifactStack(app, `CodeArtifactStack-${env.environment}`, {
+        new CodeArtifactStack(app, `code-artifact-${env.name}`, {
             account: env.account,
             region: env.region,
+            name: env.name,
+            owner: env.owner,
             ...env.codeArtifact,
         });
     }

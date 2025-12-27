@@ -22,6 +22,10 @@ cdk.context.json
 .env.local
 .env.*.local
 
+# Local account configurations (private AWS account IDs)
+**/accounts.local.ts
+**/accounts.local.js
+
 # IDE
 .vscode/
 .idea/
