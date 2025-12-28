@@ -1,4 +1,4 @@
 {
     "files": [],
-    "references": [{"path": "./packages/aws"}, {"path": "./packages/codeartifact"}]
+    "references": [{"path": "./packages/aurora"}, {"path": "./packages/aws"}, {"path": "./packages/codeartifact"}]
 }

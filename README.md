@@ -27,16 +27,18 @@ This monorepo contains the following packages:
 
 ### Subpackages Compatibility Matrix
 
-| Package                                               | Version | CDK Version | Node Version | Description                                   |
-| ----------------------------------------------------- | ------- | ----------- | ------------ | --------------------------------------------- |
-| [@cdk-constructs/aws](packages/aws)                   | 0.1.0   | ^2.225.0    | >=24         | AWS account, region, and environment enums    |
-| [@cdk-constructs/codeartifact](packages/codeartifact) | 0.1.0   | ^2.225.0    | >=24         | CodeArtifact domain and repository constructs |
+| Package                                               | Version | CDK Version | Node Version | Description                                     |
+| ----------------------------------------------------- | ------- | ----------- | ------------ | ----------------------------------------------- |
+| [@cdk-constructs/aws](packages/aws)                   | 0.1.0   | ^2.225.0    | >=24         | AWS account, region, and environment enums      |
+| [@cdk-constructs/aurora](packages/aurora)             | 0.1.0   | ^2.225.0    | >=24         | Aurora MySQL and PostgreSQL database constructs |
+| [@cdk-constructs/codeartifact](packages/codeartifact) | 0.1.0   | ^2.225.0    | >=24         | CodeArtifact domain and repository constructs   |
 
 ### Dependency Resolution
 
 ```
 @cdk-constructs/cdk (root)
 ├── @cdk-constructs/aws
+├── @cdk-constructs/aurora
 └── @cdk-constructs/codeartifact (depends on: aws@*)
 ```
 
@@ -66,6 +68,7 @@ npm install @cdk-constructs/cdk --save-exact
 
 # Install subpackages as needed
 npm install @cdk-constructs/aws --save-exact
+npm install @cdk-constructs/aurora --save-exact
 npm install @cdk-constructs/codeartifact --save-exact
 ```
 
@@ -107,10 +110,12 @@ make clean                # Remove all build artifacts
 
 # Build specific workspace
 make build-workspace PACKAGE=aws           # Build @cdk-constructs/aws
+make build-workspace PACKAGE=aurora        # Build @cdk-constructs/aurora
 make build-workspace PACKAGE=codeartifact  # Build @cdk-constructs/codeartifact
 
 # Or use individual targets
 make build-aws            # Build @cdk-constructs/aws
+make build-aurora         # Build @cdk-constructs/aurora
 make build-codeartifact   # Build @cdk-constructs/codeartifact
 ```
 
@@ -119,7 +124,7 @@ make build-codeartifact   # Build @cdk-constructs/codeartifact
 ```bash
 make lint                 # Run ESLint on all TypeScript files
 make lint-fix             # Fix linting issues automatically
-make format               # Format code with Prettier
+a               # Format code with Prettier
 make format-check         # Check code formatting without making changes
 make check                # Run all quality checks (format + lint)
 ```
@@ -155,10 +160,12 @@ make publish              # Format check + lint + test + build + publish
 
 # Publish individual packages
 make publish-aws          # Publish @cdk-constructs/aws
+make publish-aurora       # Publish @cdk-constructs/aurora
 make publish-codeartifact # Publish @cdk-constructs/codeartifact
 
 # Or publish specific workspace
 make publish-workspace PACKAGE=aws
+make publish-workspace PACKAGE=aurora
 
 # Just authenticate with CodeArtifact
 make codeartifact-login
@@ -215,7 +222,10 @@ cdk-constructs-library/
 ├── Makefile                  # Build automation and common tasks
 ├── packages/
 │   ├── aws/                 # AWS account, region, and environment enums
+│   ├── aurora/              # Aurora MySQL and PostgreSQL database constructs
 │   └── codeartifact/        # CodeArtifact domain and repository constructs
+├── examples/
+│   └── aurora/              # Aurora example stacks and configurations
 ├── src/                     # Root package source
 ├── bin/                     # CDK app entry points
 ├── lib/                     # CDK app stacks

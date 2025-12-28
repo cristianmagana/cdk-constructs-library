@@ -1,0 +1,37 @@
+/**
+ * Local environment configuration overrides.
+ *
+ * @remarks
+ * This file demonstrates how to create local configuration overrides for integration testing.
+ * Copy this file to `environments.local.ts` and update with your actual AWS resource IDs.
+ *
+ * Usage:
+ * 1. Copy this file: `cp environments.local.ts.example environments.local.ts`
+ * 2. Update the VPC and subnet IDs with your actual values
+ * 3. The `.local.ts` file is gitignored and won't be committed
+ *
+ * The local configuration will be merged with the base configuration,
+ * allowing you to override only the values you need (like VPC and subnets).
+ */
+
+/**
+ * Local environment configuration.
+ * Replace these values with your actual AWS resources for integration testing.
+ */
+export const LOCAL_CONFIG = {
+    /**
+     * Your VPC ID for testing.
+     * Find it with: aws ec2 describe-vpcs --query 'Vpcs[*].[VpcId,Tags[?Key==`Name`].Value|[0]]' --output table
+     */
+    vpcId: 'vpc-0123456789092abcd',
+
+    /**
+     * Your private subnet IDs for testing (minimum 2, recommend 3 for multi-AZ).
+     * Find them with: aws ec2 describe-subnets --filters "Name=vpc-id,Values=YOUR_VPC_ID" --query 'Subnets[*].[SubnetId,AvailabilityZone]' --output table
+     */
+    subnetIds: [
+        'subnet-0123456789092abcd',
+        'subnet-0123456789092efgh',
+        'subnet-0123456789092ijkl',
+    ],
+};

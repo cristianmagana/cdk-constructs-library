@@ -1,4 +1,4 @@
-.PHONY: help install clean lint lint-fix format format-check format-fix build build-app build-all build-workspace build-aws build-codeartifact test synth diff deploy check ci-build ci-check codeartifact-login publish-workspace publish-aws publish-codeartifact publish-all-packages pre-publish publish
+.PHONY: help install clean lint lint-fix format format-check format-fix build build-app build-all build-workspace build-aws build-aurora build-codeartifact test synth diff deploy check ci-build ci-check codeartifact-login publish-workspace publish-aws publish-aurora publish-codeartifact publish-all-packages pre-publish publish
 
 # Default target - show help
 .DEFAULT_GOAL := help
@@ -87,7 +87,7 @@ build-workspace: ## Build specific workspace (usage: make build-workspace PACKAG
 	@if [ -z "$(PACKAGE)" ]; then \
 		echo "$(RED)✗ Error: PACKAGE variable not set$(NC)"; \
 		echo "$(YELLOW)Usage: make build-workspace PACKAGE=aws$(NC)"; \
-		echo "$(YELLOW)Available packages: aws, codeartifact$(NC)"; \
+		echo "$(YELLOW)Available packages: aws, aurora, codeartifact$(NC)"; \
 		exit 1; \
 	fi
 	@echo "$(CYAN)Building @cdk-constructs/$(PACKAGE)...$(NC)"
@@ -98,6 +98,11 @@ build-aws: ## Build @cdk-constructs/aws package
 	@echo "$(CYAN)Building @cdk-constructs/aws...$(NC)"
 	npm run build --workspace=@cdk-constructs/aws
 	@echo "$(GREEN)✓ @cdk-constructs/aws built$(NC)"
+
+build-aurora: ## Build @cdk-constructs/aurora package
+	@echo "$(CYAN)Building @cdk-constructs/aurora...$(NC)"
+	npm run build --workspace=@cdk-constructs/aurora
+	@echo "$(GREEN)✓ @cdk-constructs/aurora built$(NC)"
 
 build-codeartifact: ## Build @cdk-constructs/codeartifact package
 	@echo "$(CYAN)Building @cdk-constructs/codeartifact...$(NC)"
@@ -199,7 +204,7 @@ publish-workspace: codeartifact-login ## Publish specific workspace (usage: make
 	@if [ -z "$(PACKAGE)" ]; then \
 		echo "$(RED)✗ Error: PACKAGE variable not set$(NC)"; \
 		echo "$(YELLOW)Usage: make publish-workspace PACKAGE=aws$(NC)"; \
-		echo "$(YELLOW)Available packages: aws, codeartifact$(NC)"; \
+		echo "$(YELLOW)Available packages: aws, aurora, codeartifact$(NC)"; \
 		exit 1; \
 	fi
 	@echo "$(CYAN)Publishing @cdk-constructs/$(PACKAGE)...$(NC)"
@@ -211,12 +216,17 @@ publish-aws: codeartifact-login ## Publish @cdk-constructs/aws package
 	@cd packages/aws && npm publish
 	@echo "$(GREEN)✓ @cdk-constructs/aws published$(NC)"
 
+publish-aurora: codeartifact-login ## Publish @cdk-constructs/aurora package
+	@echo "$(CYAN)Publishing @cdk-constructs/aurora...$(NC)"
+	@cd packages/aurora && npm publish
+	@echo "$(GREEN)✓ @cdk-constructs/aurora published$(NC)"
+
 publish-codeartifact: codeartifact-login ## Publish @cdk-constructs/codeartifact package
 	@echo "$(CYAN)Publishing @cdk-constructs/codeartifact...$(NC)"
 	@cd packages/codeartifact && npm publish
 	@echo "$(GREEN)✓ @cdk-constructs/codeartifact published$(NC)"
 
-publish-all-packages: publish-aws publish-codeartifact ## Publish all workspace packages
+publish-all-packages: publish-aws publish-aurora publish-codeartifact ## Publish all workspace packages
 	@echo "$(GREEN)✓ All packages published$(NC)"
 
 pre-publish: ## Run all pre-publish validation steps
@@ -233,4 +243,5 @@ publish: pre-publish publish-all-packages ## Run validation and publish all pack
 	@echo ""
 	@echo "$(CYAN)Published packages:$(NC)"
 	@echo "  • @cdk-constructs/aws"
+	@echo "  • @cdk-constructs/aurora"
 	@echo "  • @cdk-constructs/codeartifact"

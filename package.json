@@ -53,6 +53,7 @@
         "typescript": "~5.4.3"
     },
     "dependencies": {
+        "@cdk-constructs/aurora": "*",
         "@cdk-constructs/aws": "*",
         "@cdk-constructs/codeartifact": "*",
         "source-map-support": "^0.5.21"
