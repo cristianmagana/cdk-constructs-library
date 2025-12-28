@@ -26,6 +26,10 @@ cdk.context.json
 **/accounts.local.ts
 **/accounts.local.js
 
+# Local environment configurations (private VPC/subnet IDs)
+**/environments.local.ts
+**/environments.local.js
+
 # IDE
 .vscode/
 .idea/

@@ -34,11 +34,35 @@ export const integrationEnvironments: ProjectEnvironment[] = [
     },
     {
         ...devEnv,
+        // Aurora MySQL dev configuration
+        auroraMySql: {
+            clusterName: `aurora-mysql-${devEnv.name}`,
+        },
+        // Aurora PostgreSQL dev configuration
+        auroraPostgres: {
+            clusterName: `aurora-postgres-${devEnv.name}`,
+        },
     },
     {
         ...stagingEnv,
+        // Aurora MySQL staging configuration
+        auroraMySql: {
+            clusterName: `aurora-mysql-${stagingEnv.name}`,
+        },
+        // Aurora PostgreSQL staging configuration
+        auroraPostgres: {
+            clusterName: `aurora-postgres-${stagingEnv.name}`,
+        },
     },
     {
         ...prodEnv,
+        // Aurora MySQL prod configuration
+        auroraMySql: {
+            clusterName: `aurora-mysql-${prodEnv.name}`,
+        },
+        // Aurora PostgreSQL prod configuration
+        auroraPostgres: {
+            clusterName: `aurora-postgres-${prodEnv.name}`,
+        },
     },
 ];
