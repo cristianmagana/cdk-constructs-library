@@ -1,4 +1,10 @@
 {
     "files": [],
-    "references": [{"path": "./packages/aurora"}, {"path": "./packages/aws"}, {"path": "./packages/codeartifact"}]
+    "references": [
+        {"path": "./packages/aws"},
+        {"path": "./packages/s3"},
+        {"path": "./packages/aurora"},
+        {"path": "./packages/codeartifact"},
+        {"path": "./packages/cloudfront"}
+    ]
 }

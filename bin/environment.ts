@@ -42,6 +42,10 @@ export const integrationEnvironments: ProjectEnvironment[] = [
         auroraPostgres: {
             clusterName: `aurora-postgres-${devEnv.name}`,
         },
+        // S3 bucket dev configuration (flag to enable the stack)
+        s3: {},
+        // CloudFront distribution dev configuration (flag to enable the stack)
+        cloudfront: {},
     },
     {
         ...stagingEnv,
@@ -53,6 +57,10 @@ export const integrationEnvironments: ProjectEnvironment[] = [
         auroraPostgres: {
             clusterName: `aurora-postgres-${stagingEnv.name}`,
         },
+        // S3 bucket staging configuration (flag to enable the stack)
+        s3: {},
+        // CloudFront distribution staging configuration (flag to enable the stack)
+        cloudfront: {},
     },
     {
         ...prodEnv,
@@ -64,5 +72,9 @@ export const integrationEnvironments: ProjectEnvironment[] = [
         auroraPostgres: {
             clusterName: `aurora-postgres-${prodEnv.name}`,
         },
+        // S3 bucket prod configuration (flag to enable the stack)
+        s3: {},
+        // CloudFront distribution prod configuration (flag to enable the stack)
+        cloudfront: {},
     },
 ];

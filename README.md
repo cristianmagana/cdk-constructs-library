@@ -27,11 +27,13 @@ This monorepo contains the following packages:
 
 ### Subpackages Compatibility Matrix
 
-| Package                                               | Version | CDK Version | Node Version | Description                                     |
-| ----------------------------------------------------- | ------- | ----------- | ------------ | ----------------------------------------------- |
-| [@cdk-constructs/aws](packages/aws)                   | 0.1.0   | ^2.225.0    | >=24         | AWS account, region, and environment enums      |
-| [@cdk-constructs/aurora](packages/aurora)             | 0.1.0   | ^2.225.0    | >=24         | Aurora MySQL and PostgreSQL database constructs |
-| [@cdk-constructs/codeartifact](packages/codeartifact) | 0.1.0   | ^2.225.0    | >=24         | CodeArtifact domain and repository constructs   |
+| Package                                               | Version | CDK Version | Node Version | Description                                                      |
+| ----------------------------------------------------- | ------- | ----------- | ------------ | ---------------------------------------------------------------- |
+| [@cdk-constructs/aws](packages/aws)                   | 0.1.0   | ^2.225.0    | >=24         | AWS account, region, and environment enums                       |
+| [@cdk-constructs/aurora](packages/aurora)             | 0.1.0   | ^2.225.0    | >=24         | Aurora MySQL and PostgreSQL database constructs                  |
+| [@cdk-constructs/cloudfront](packages/cloudfront)     | 0.1.0   | ^2.225.0    | >=24         | CloudFront distribution with S3 origin constructs                |
+| [@cdk-constructs/codeartifact](packages/codeartifact) | 0.1.0   | ^2.225.0    | >=24         | CodeArtifact domain and repository constructs                    |
+| [@cdk-constructs/s3](packages/s3)                     | 0.1.0   | ^2.225.0    | >=24         | S3 bucket constructs with lifecycle policies and storage classes |
 
 ### Dependency Resolution
 
@@ -39,7 +41,9 @@ This monorepo contains the following packages:
 @cdk-constructs/cdk (root)
 ├── @cdk-constructs/aws
 ├── @cdk-constructs/aurora
-└── @cdk-constructs/codeartifact (depends on: aws@*)
+├── @cdk-constructs/cloudfront (depends on: s3@*)
+├── @cdk-constructs/codeartifact (depends on: aws@*)
+└── @cdk-constructs/s3
 ```
 
 ### Root Package Constructs
@@ -49,7 +53,6 @@ The following constructs remain in the root package and will be migrated to subp
 - **Database Migration**: DMS replication instances and tasks
 - **Search & Analytics**: OpenSearch domain creation
 - **Caching**: Redis ElastiCache cluster creation
-- **Content Delivery**: CloudFront + S3 distributions
 - **Streaming**: Kinesis data streams
 
 ## Installation
@@ -69,7 +72,9 @@ npm install @cdk-constructs/cdk --save-exact
 # Install subpackages as needed
 npm install @cdk-constructs/aws --save-exact
 npm install @cdk-constructs/aurora --save-exact
+npm install @cdk-constructs/cloudfront --save-exact
 npm install @cdk-constructs/codeartifact --save-exact
+npm install @cdk-constructs/s3 --save-exact
 ```
 
 ## Development
@@ -111,12 +116,16 @@ make clean                # Remove all build artifacts
 # Build specific workspace
 make build-workspace PACKAGE=aws           # Build @cdk-constructs/aws
 make build-workspace PACKAGE=aurora        # Build @cdk-constructs/aurora
+make build-workspace PACKAGE=cloudfront    # Build @cdk-constructs/cloudfront
 make build-workspace PACKAGE=codeartifact  # Build @cdk-constructs/codeartifact
+make build-workspace PACKAGE=s3            # Build @cdk-constructs/s3
 
 # Or use individual targets
 make build-aws            # Build @cdk-constructs/aws
 make build-aurora         # Build @cdk-constructs/aurora
+make build-cloudfront     # Build @cdk-constructs/cloudfront
 make build-codeartifact   # Build @cdk-constructs/codeartifact
+make build-s3             # Build @cdk-constructs/s3
 ```
 
 #### Code Quality
@@ -161,11 +170,15 @@ make publish              # Format check + lint + test + build + publish
 # Publish individual packages
 make publish-aws          # Publish @cdk-constructs/aws
 make publish-aurora       # Publish @cdk-constructs/aurora
+make publish-cloudfront   # Publish @cdk-constructs/cloudfront
 make publish-codeartifact # Publish @cdk-constructs/codeartifact
+make publish-s3           # Publish @cdk-constructs/s3
 
 # Or publish specific workspace
 make publish-workspace PACKAGE=aws
 make publish-workspace PACKAGE=aurora
+make publish-workspace PACKAGE=cloudfront
+make publish-workspace PACKAGE=s3
 
 # Just authenticate with CodeArtifact
 make codeartifact-login
@@ -223,7 +236,9 @@ cdk-constructs-library/
 ├── packages/
 │   ├── aws/                 # AWS account, region, and environment enums
 │   ├── aurora/              # Aurora MySQL and PostgreSQL database constructs
-│   └── codeartifact/        # CodeArtifact domain and repository constructs
+│   ├── cloudfront/          # CloudFront distribution with S3 origin constructs
+│   ├── codeartifact/        # CodeArtifact domain and repository constructs
+│   └── s3/                  # S3 bucket constructs with lifecycle policies
 ├── examples/
 │   └── aurora/              # Aurora example stacks and configurations
 ├── src/                     # Root package source

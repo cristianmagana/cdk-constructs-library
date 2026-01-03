@@ -5,6 +5,10 @@ import {AuroraMySqlDevStack} from '../examples/aurora/stacks/aurora-mysql-dev-st
 import {AuroraMySqlProdStack} from '../examples/aurora/stacks/aurora-mysql-prod-stack';
 import {AuroraPostgresDevStack} from '../examples/aurora/stacks/aurora-postgres-dev-stack';
 import {AuroraPostgresProdStack} from '../examples/aurora/stacks/aurora-postgres-prod-stack';
+import {S3DevStack} from '../examples/s3/stacks/s3-dev-stack';
+import {S3ProdStack} from '../examples/s3/stacks/s3-prod-stack';
+import {CloudFrontDevStack} from '../examples/cloudfront/stacks/cloudfront-dev-stack';
+import {CloudFrontProdStack} from '../examples/cloudfront/stacks/cloudfront-prod-stack';
 import {integrationEnvironments} from './environment';
 
 const app = new App();
@@ -52,6 +56,40 @@ integrationEnvironments.forEach(env => {
             new AuroraPostgresDevStack(app, `aurora-postgres-${env.name}`, envProps);
         } else if (env.name === 'prod') {
             new AuroraPostgresProdStack(app, `aurora-postgres-${env.name}`, envProps);
+        }
+    }
+
+    // Create S3 stack if configured
+    if (env.s3) {
+        const envProps = {
+            env: {
+                account: env.account,
+                region: env.region,
+            },
+        };
+
+        // Choose stack based on environment
+        if (env.name === 'dev' || env.name === 'staging') {
+            new S3DevStack(app, `s3-${env.name}`, envProps);
+        } else if (env.name === 'prod') {
+            new S3ProdStack(app, `s3-${env.name}`, envProps);
+        }
+    }
+
+    // Create CloudFront stack if configured
+    if (env.cloudfront) {
+        const envProps = {
+            env: {
+                account: env.account,
+                region: env.region,
+            },
+        };
+
+        // Choose stack based on environment
+        if (env.name === 'dev' || env.name === 'staging') {
+            new CloudFrontDevStack(app, `cloudfront-${env.name}`, envProps);
+        } else if (env.name === 'prod') {
+            new CloudFrontProdStack(app, `cloudfront-${env.name}`, envProps);
         }
     }
 });

@@ -1,6 +1,8 @@
 import {EnvironmentConfig} from '@cdk-constructs/aws';
 import {CodeArtifactStackProps} from '@cdk-constructs/codeartifact';
 import {AuroraMySqlClusterProps, AuroraPostgresClusterProps} from '@cdk-constructs/aurora';
+import {BucketProps} from '@cdk-constructs/s3';
+import {CloudFrontS3Props} from '@cdk-constructs/cloudfront';
 
 /**
  * Project environment configuration that includes all stack props.
@@ -48,4 +50,16 @@ export type ProjectEnvironment = EnvironmentConfig & {
      * If provided, an Aurora PostgreSQL stack will be created for this environment.
      */
     auroraPostgres?: Partial<AuroraPostgresClusterProps>;
+
+    /**
+     * Optional S3 bucket configuration.
+     * If provided, an S3 bucket stack will be created for this environment.
+     */
+    s3?: Partial<BucketProps>;
+
+    /**
+     * Optional CloudFront + S3 distribution configuration.
+     * If provided, a CloudFront distribution stack will be created for this environment.
+     */
+    cloudfront?: Partial<CloudFrontS3Props>;
 };
