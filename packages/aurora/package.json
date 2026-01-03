@@ -1,6 +1,7 @@
 {
     "name": "@cdk-constructs/aurora",
     "version": "0.1.0",
+    "license": "Apache-2.0",
     "description": "Aurora PostgreSQL and MySQL constructs for CDK Constructs Library",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",

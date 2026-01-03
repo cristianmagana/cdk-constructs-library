@@ -1,6 +1,7 @@
 {
     "name": "@cdk-constructs/codeartifact",
     "version": "0.1.0",
+    "license": "Apache-2.0",
     "description": "CodeArtifact domain and repository constructs for CDK Constructs Library",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
