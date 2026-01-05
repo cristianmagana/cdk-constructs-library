@@ -36,7 +36,7 @@
         "@types/jest": "^29.5.12",
         "@types/node": "20.11.30",
         "aws-cdk": "2.1032.0",
-        "aws-cdk-lib": "2.225.0",
+        "aws-cdk-lib": "2.233.0",
         "constructs": "10.4.2",
         "eslint": "^8.57.0",
         "eslint-config-prettier": "^9.0.0",
