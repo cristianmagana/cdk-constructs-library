@@ -4,3 +4,11 @@ cdk.out/**
 docs/**
 dist/**
 **/dist/**
+.github/**
+.vscode/**
+.cursor/**
+.claude/**
+.husky/**
+.prettierignore
+.prettierrc
+.prettierignore
