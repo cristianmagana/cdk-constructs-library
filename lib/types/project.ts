@@ -3,6 +3,7 @@ import {CodeArtifactStackProps} from '@cdk-constructs/codeartifact';
 import {AuroraMySqlClusterProps, AuroraPostgresClusterProps} from '@cdk-constructs/aurora';
 import {BucketProps} from '@cdk-constructs/s3';
 import {CloudFrontS3Props} from '@cdk-constructs/cloudfront';
+import {PublicHostedZoneProps, PrivateHostedZoneProps} from '@cdk-constructs/route53';
 
 /**
  * Project environment configuration that includes all stack props.
@@ -62,4 +63,20 @@ export type ProjectEnvironment = EnvironmentConfig & {
      * If provided, a CloudFront distribution stack will be created for this environment.
      */
     cloudfront?: Partial<CloudFrontS3Props>;
+
+    /**
+     * Optional Route53 configuration.
+     * If provided, a Route53 stack will be created for this environment.
+     */
+    route53?: {
+        /**
+         * Public hosted zone configuration.
+         */
+        publicZone?: Partial<PublicHostedZoneProps>;
+
+        /**
+         * Private hosted zone configuration.
+         */
+        privateZone?: Partial<PrivateHostedZoneProps>;
+    };
 };

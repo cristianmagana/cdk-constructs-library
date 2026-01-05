@@ -9,6 +9,8 @@ import {S3DevStack} from '../examples/s3/stacks/s3-dev-stack';
 import {S3ProdStack} from '../examples/s3/stacks/s3-prod-stack';
 import {CloudFrontDevStack} from '../examples/cloudfront/stacks/cloudfront-dev-stack';
 import {CloudFrontProdStack} from '../examples/cloudfront/stacks/cloudfront-prod-stack';
+import {Route53DevStack} from '../examples/route53/stacks/route53-dev-stack';
+import {Route53ProdStack} from '../examples/route53/stacks/route53-prod-stack';
 import {integrationEnvironments} from './environment';
 
 const app = new App();
@@ -90,6 +92,23 @@ integrationEnvironments.forEach(env => {
             new CloudFrontDevStack(app, `cloudfront-${env.name}`, envProps);
         } else if (env.name === 'prod') {
             new CloudFrontProdStack(app, `cloudfront-${env.name}`, envProps);
+        }
+    }
+
+    // Create Route53 stack if configured
+    if (env.route53) {
+        const envProps = {
+            env: {
+                account: env.account,
+                region: env.region,
+            },
+        };
+
+        // Choose stack based on environment
+        if (env.name === 'dev' || env.name === 'staging') {
+            new Route53DevStack(app, `route53-${env.name}`, envProps);
+        } else if (env.name === 'prod') {
+            new Route53ProdStack(app, `route53-${env.name}`, envProps);
         }
     }
 });
