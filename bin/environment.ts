@@ -46,6 +46,8 @@ export const integrationEnvironments: ProjectEnvironment[] = [
         s3: {},
         // CloudFront distribution dev configuration (flag to enable the stack)
         cloudfront: {},
+        // Route53 DNS dev configuration (flag to enable the stack)
+        route53: {},
     },
     {
         ...stagingEnv,
@@ -61,6 +63,8 @@ export const integrationEnvironments: ProjectEnvironment[] = [
         s3: {},
         // CloudFront distribution staging configuration (flag to enable the stack)
         cloudfront: {},
+        // Route53 DNS staging configuration (flag to enable the stack)
+        route53: {},
     },
     {
         ...prodEnv,
@@ -76,5 +80,7 @@ export const integrationEnvironments: ProjectEnvironment[] = [
         s3: {},
         // CloudFront distribution prod configuration (flag to enable the stack)
         cloudfront: {},
+        // Route53 DNS prod configuration (flag to enable the stack)
+        route53: {},
     },
 ];

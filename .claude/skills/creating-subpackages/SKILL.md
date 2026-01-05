@@ -495,5 +495,6 @@ integrationEnvironments.forEach(env => {
 - [ ] Comprehensive TSDoc documentation
 - [ ] Test coverage for all variants
 - [ ] Package exports properly organized
-- [ ] README with usage examples
+- [ ] Package README with usage examples
+- [ ] Root README.md updated with new package (compatibility matrix, dependency resolution, installation, build commands, publish commands, workspace structure)
 - [ ] Integration with root project complete

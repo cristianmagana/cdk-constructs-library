@@ -5,6 +5,7 @@
         {"path": "./packages/s3"},
         {"path": "./packages/aurora"},
         {"path": "./packages/codeartifact"},
-        {"path": "./packages/cloudfront"}
+        {"path": "./packages/cloudfront"},
+        {"path": "./packages/route53"}
     ]
 }
