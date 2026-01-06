@@ -35,9 +35,9 @@
     "devDependencies": {
         "@types/jest": "^29.5.12",
         "@types/node": "20.11.30",
-        "aws-cdk": "2.1032.0",
-        "aws-cdk-lib": "2.225.0",
-        "constructs": "10.4.2",
+        "aws-cdk": "2.1100.2",
+        "aws-cdk-lib": "2.233.0",
+        "constructs": "10.4.4",
         "eslint": "^8.57.0",
         "eslint-config-prettier": "^9.0.0",
         "eslint-plugin-import": "^2.31.0",
@@ -51,7 +51,7 @@
         "ts-deepmerge": "^7.0.2",
         "ts-jest": "^29.1.2",
         "ts-node": "^10.9.2",
-        "typescript": "~5.4.3"
+        "typescript": "~5.9.3"
     },
     "dependencies": {
         "@cdk-constructs/aurora": "*",
